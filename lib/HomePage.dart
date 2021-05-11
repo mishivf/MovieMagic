@@ -42,8 +42,6 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-List<String> entries = <String>['A', 'B', 'C'];
-
 class MovieList extends StatefulWidget {
   const MovieList({
     Key key,
@@ -54,7 +52,7 @@ class MovieList extends StatefulWidget {
 }
 
 class _MovieListState extends State<MovieList> {
-  List<Result> _movies;
+  List<Movie> _movies;
   bool _loading;
 
   @override
@@ -80,7 +78,7 @@ class _MovieListState extends State<MovieList> {
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         SizedBox(
-          height: 20,
+          height: 10,
         ),
         Container(
           height: 200,
@@ -91,13 +89,12 @@ class _MovieListState extends State<MovieList> {
                 return Row(
                   children: [
                     Container(
-                      height: 150,
                       child: Image.network(
                           'https://image.tmdb.org/t/p/original/' +
                               _movies[index].posterPath),
                     ),
                     SizedBox(
-                      width: 5,
+                      width: 10,
                     )
                   ],
                 );

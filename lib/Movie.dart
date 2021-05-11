@@ -4,12 +4,12 @@
 
 import 'dart:convert';
 
-Movie movieFromJson(String str) => Movie.fromJson(json.decode(str));
+MovieList movieFromJson(String str) => MovieList.fromJson(json.decode(str));
 
-String movieToJson(Movie data) => json.encode(data.toJson());
+String movieToJson(MovieList data) => json.encode(data.toJson());
 
-class Movie {
-  Movie({
+class MovieList {
+  MovieList({
     this.page,
     this.results,
     this.totalPages,
@@ -17,14 +17,14 @@ class Movie {
   });
 
   int page;
-  List<Result> results;
+  List<Movie> results;
   int totalPages;
   int totalResults;
 
-  factory Movie.fromJson(Map<String, dynamic> json) => Movie(
+  factory MovieList.fromJson(Map<String, dynamic> json) => MovieList(
         page: json["page"],
         results:
-            List<Result>.from(json["results"].map((x) => Result.fromJson(x))),
+            List<Movie>.from(json["results"].map((x) => Movie.fromJson(x))),
         totalPages: json["total_pages"],
         totalResults: json["total_results"],
       );
@@ -37,8 +37,8 @@ class Movie {
       };
 }
 
-class Result {
-  Result({
+class Movie {
+  Movie({
     this.adult,
     this.backdropPath,
     this.genreIds,
@@ -72,7 +72,7 @@ class Result {
   double popularity;
   MediaType mediaType;
 
-  factory Result.fromJson(Map<String, dynamic> json) => Result(
+  factory Movie.fromJson(Map<String, dynamic> json) => Movie(
         adult: json["adult"],
         backdropPath: json["backdrop_path"],
         genreIds: List<int>.from(json["genre_ids"].map((x) => x)),
