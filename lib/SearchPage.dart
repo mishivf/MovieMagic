@@ -1,15 +1,28 @@
 import 'package:flutter/material.dart';
 
-class SearchPage extends StatefulWidget {
+class SearchWidget extends StatefulWidget {
+  const SearchWidget({
+    Key key,
+  }) : super(key: key);
+
   @override
-  _SearchPageState createState() => _SearchPageState();
+  _SearchWidgetState createState() => _SearchWidgetState();
 }
 
-class _SearchPageState extends State<SearchPage> {
+class _SearchWidgetState extends State<SearchWidget> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-    );
+    return Padding(
+        padding: EdgeInsets.fromLTRB(10, 40, 10, 0),
+        child: Column(
+          children: [
+            TextField(
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Search movies',
+              ),
+            )
+          ],
+        ));
   }
 }
