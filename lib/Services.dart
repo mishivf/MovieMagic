@@ -5,17 +5,17 @@ class Services {
   //
   static Uri url = Uri.parse(
       'https://api.themoviedb.org/3/trending/movie/day?api_key=ecd787072d3797fe3b24ff3cb23165c5');
-  static Future<Movie> getUsers() async {
+  static Future<List<Result>> getMovies() async {
     try {
       final response = await http.get(url);
       if (200 == response.statusCode) {
         final Movie movies = movieFromJson(response.body);
-        return movies;
+        return movies.results;
       } else {
-        return Movie();
+        return <Result>[];
       }
     } catch (e) {
-      return Movie();
+      return <Result>[];
     }
   }
 }
