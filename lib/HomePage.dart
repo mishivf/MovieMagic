@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'MoviePage.dart';
 import 'SearchPage.dart';
 import 'Services.dart';
 import 'Movie.dart';
@@ -200,11 +201,26 @@ class _WishlistWidgetState extends State<WishlistWidget> {
                       child: Column(
                         children: [
                           Row(children: [
-                            Container(
-                              height: 180,
-                              child: Image.network(
+                            // Container(
+                            //   height: 180,
+                            //   child: Image.network(
+                            //       'https://image.tmdb.org/t/p/original/' +
+                            //           _movies[index].posterPath),
+                            // ),
+                            IconButton(
+                              icon: Image.network(
                                   'https://image.tmdb.org/t/p/original/' +
                                       _movies[index].posterPath),
+                              iconSize: 150,
+                              onPressed: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) =>
+                                          MoviePage(movie: _movies[index]),
+                                    ));
+                              },
+                              padding: EdgeInsets.all(0.0),
                             ),
                             SizedBox(
                               width: 10,

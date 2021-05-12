@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'HomePage.dart';
-import 'package:http/http.dart' as http;
 
 class MyApp extends StatelessWidget {
   @override
