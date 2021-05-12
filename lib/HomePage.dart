@@ -12,7 +12,7 @@ class _HomePageState extends State<HomePage> {
   final List<Widget> _children = [
     SearchWidget(),
     MovieListWidget(),
-    SearchWidget()
+    WishlistWidget(),
   ];
   int _currentIndex = 1;
 
@@ -103,7 +103,7 @@ class _MovieListWidgetState extends State<MovieListWidget> {
             height: 200,
             child: ListView.builder(
                 scrollDirection: Axis.horizontal,
-                itemCount: null == _movies ? 0 : 3,
+                itemCount: null == _movies ? 0 : 5,
                 itemBuilder: (BuildContext context, int index) {
                   return Row(
                     children: [
@@ -118,6 +118,130 @@ class _MovieListWidgetState extends State<MovieListWidget> {
                     ],
                   );
                 }),
+          ),
+          SizedBox(
+            height: 15,
+          ),
+          Text(
+            'New Releases',
+            textScaleFactor: 2.5,
+            textAlign: TextAlign.left,
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          SizedBox(
+            height: 10,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class WishlistWidget extends StatefulWidget {
+  const WishlistWidget({
+    Key key,
+  }) : super(key: key);
+
+  @override
+  _WishlistWidgetState createState() => _WishlistWidgetState();
+}
+
+class _WishlistWidgetState extends State<WishlistWidget> {
+  List<Movie> _movies;
+  bool _loading;
+  Color favButtonColor;
+
+  void onIconTapped() {
+    setState(() {
+      if (favButtonColor == Colors.red) {
+        favButtonColor = Colors.grey;
+      } else {
+        favButtonColor = Colors.red;
+      }
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loading = true;
+    Services.getMovies().then((movies) {
+      setState(() {
+        _movies = movies;
+        _loading = false;
+        favButtonColor = Colors.red;
+      });
+    });
+  }
+
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.fromLTRB(10, 40, 10, 0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text(
+            'Wishlist',
+            textScaleFactor: 2.5,
+            textAlign: TextAlign.left,
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          Expanded(
+            child: Container(
+              height: 400,
+              child: ListView.builder(
+                  scrollDirection: Axis.vertical,
+                  itemCount: null == _movies ? 0 : 5,
+                  itemBuilder: (BuildContext context, int index) {
+                    return Container(
+                      child: Column(
+                        children: [
+                          Row(children: [
+                            Container(
+                              height: 180,
+                              child: Image.network(
+                                  'https://image.tmdb.org/t/p/original/' +
+                                      _movies[index].posterPath),
+                            ),
+                            SizedBox(
+                              width: 10,
+                            ),
+                            Expanded(
+                              child: Column(
+                                children: [
+                                  Container(
+                                    width: 200,
+                                    child: Text(
+                                      _movies[index].title,
+                                      textScaleFactor: 1.2,
+                                    ),
+                                  ),
+                                  Container(
+                                    width: 200,
+                                    child: Text(
+                                      _movies[index].overview,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            IconButton(
+                              icon: Icon(Icons.favorite),
+                              color: favButtonColor,
+                              onPressed: onIconTapped,
+                            )
+                          ]),
+                          SizedBox(
+                            height: 10,
+                          )
+                        ],
+                      ),
+                    );
+                  }),
+            ),
           ),
         ],
       ),
