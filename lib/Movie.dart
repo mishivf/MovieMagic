@@ -53,7 +53,6 @@ class Movie {
     this.voteCount,
     this.title,
     this.popularity,
-    this.mediaType,
   });
 
   bool adult;
@@ -70,7 +69,6 @@ class Movie {
   int voteCount;
   String title;
   double popularity;
-  MediaType mediaType;
 
   factory Movie.fromJson(Map<String, dynamic> json) => Movie(
         adult: json["adult"],
@@ -83,11 +81,10 @@ class Movie {
         video: json["video"],
         voteAverage: json["vote_average"].toDouble(),
         overview: json["overview"],
-        releaseDate: DateTime.parse(json["release_date"]),
+        // releaseDate: DateTime.parse(json["release_date"]),
         voteCount: json["vote_count"],
         title: json["title"],
         popularity: json["popularity"].toDouble(),
-        mediaType: mediaTypeValues.map[json["media_type"]],
       );
 
   Map<String, dynamic> toJson() => {
@@ -101,18 +98,13 @@ class Movie {
         "video": video,
         "vote_average": voteAverage,
         "overview": overview,
-        "release_date":
-            "${releaseDate.year.toString().padLeft(4, '0')}-${releaseDate.month.toString().padLeft(2, '0')}-${releaseDate.day.toString().padLeft(2, '0')}",
+        // "release_date":
+        //     "${releaseDate.year.toString().padLeft(4, '0')}-${releaseDate.month.toString().padLeft(2, '0')}-${releaseDate.day.toString().padLeft(2, '0')}",
         "vote_count": voteCount,
         "title": title,
         "popularity": popularity,
-        "media_type": mediaTypeValues.reverse[mediaType],
       };
 }
-
-enum MediaType { MOVIE }
-
-final mediaTypeValues = EnumValues({"movie": MediaType.MOVIE});
 
 enum OriginalLanguage { EN, ZH, JA, DE }
 
