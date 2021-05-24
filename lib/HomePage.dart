@@ -70,69 +70,186 @@ class MovieListWidget extends StatefulWidget {
 }
 
 class _MovieListWidgetState extends State<MovieListWidget> {
-  List<Movie> _movies;
+  List<Movie> _trendingMovies, _popularMovies, _upcomingMovies;
   bool _loading;
 
   @override
   void initState() {
     super.initState();
     _loading = true;
-    Services.getMovies().then((movies) {
+    Services.getMovies(Uri.parse(
+            'https://api.themoviedb.org/3/trending/movie/day?api_key=ecd787072d3797fe3b24ff3cb23165c5'))
+        .then((movies) {
       setState(() {
-        _movies = movies;
+        _trendingMovies = movies;
+        _loading = false;
+      });
+    });
+    Services.getMovies(Uri.parse(
+            'https://api.themoviedb.org/3/movie/popular?api_key=ecd787072d3797fe3b24ff3cb23165c5&language=en-US&page=1'))
+        .then((movies) {
+      setState(() {
+        _popularMovies = movies;
+        _loading = false;
+      });
+    });
+    Services.getMovies(Uri.parse(
+            'https://api.themoviedb.org/3/movie/upcoming?api_key=ecd787072d3797fe3b24ff3cb23165c5&language=en-US&page=1'))
+        .then((movies) {
+      setState(() {
+        _upcomingMovies = movies;
         _loading = false;
       });
     });
   }
 
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.fromLTRB(10, 40, 10, 0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text(
-            'Trending',
-            textScaleFactor: 2.5,
-            textAlign: TextAlign.left,
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          Container(
-            height: 200,
-            child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: null == _movies ? 0 : 5,
-                itemBuilder: (BuildContext context, int index) {
-                  return Row(
-                    children: [
-                      Container(
-                        child: Image.network(
-                            'https://image.tmdb.org/t/p/original/' +
-                                _movies[index].posterPath),
-                      ),
-                      SizedBox(
-                        width: 10,
-                      )
-                    ],
-                  );
-                }),
-          ),
-          SizedBox(
-            height: 15,
-          ),
-          Text(
-            'New Releases',
-            textScaleFactor: 2.5,
-            textAlign: TextAlign.left,
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-          SizedBox(
-            height: 10,
-          ),
-        ],
+    return SingleChildScrollView(
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(10, 40, 10, 0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            SizedBox(
+              height: 10,
+            ),
+            Text(
+              'Trending',
+              textScaleFactor: 2.5,
+              textAlign: TextAlign.left,
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            Container(
+              height: 250,
+              child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: null == _trendingMovies ? 0 : 5,
+                  itemBuilder: (BuildContext context, int index) {
+                    return Row(
+                      children: [
+                        // Container(
+                        //   child: Image.network(
+                        //       'https://image.tmdb.org/t/p/w500/' +
+                        //           _movies[index].posterPath),
+                        // ),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) =>
+                                      MoviePage(movie: _trendingMovies[index]),
+                                ));
+                          },
+                          child: Image.network(
+                              'https://image.tmdb.org/t/p/w500/' +
+                                  _trendingMovies[index].posterPath),
+                        ),
+                        SizedBox(
+                          width: 10,
+                        )
+                      ],
+                    );
+                  }),
+            ),
+            SizedBox(
+              height: 15,
+            ),
+            Text(
+              'Popular',
+              textScaleFactor: 2.5,
+              textAlign: TextAlign.left,
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            Container(
+              height: 250,
+              child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: null == _trendingMovies ? 0 : 5,
+                  itemBuilder: (BuildContext context, int index) {
+                    return Row(
+                      children: [
+                        // Container(
+                        //   child: Image.network(
+                        //       'https://image.tmdb.org/t/p/w500/' +
+                        //           _movies[index].posterPath),
+                        // ),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) =>
+                                      MoviePage(movie: _popularMovies[index]),
+                                ));
+                          },
+                          child: Image.network(
+                              'https://image.tmdb.org/t/p/w500/' +
+                                  _popularMovies[index].posterPath),
+                        ),
+                        SizedBox(
+                          width: 10,
+                        )
+                      ],
+                    );
+                  }),
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            Text(
+              'Upcoming',
+              textScaleFactor: 2.5,
+              textAlign: TextAlign.left,
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            Container(
+              height: 250,
+              child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: null == _upcomingMovies ? 0 : 5,
+                  itemBuilder: (BuildContext context, int index) {
+                    return Row(
+                      children: [
+                        // Container(
+                        //   child: Image.network(
+                        //       'https://image.tmdb.org/t/p/w500/' +
+                        //           _movies[index].posterPath),
+                        // ),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) =>
+                                      MoviePage(movie: _upcomingMovies[index]),
+                                ));
+                          },
+                          child: Image.network(
+                              'https://image.tmdb.org/t/p/w500/' +
+                                  _upcomingMovies[index].posterPath),
+                        ),
+                        SizedBox(
+                          width: 10,
+                        )
+                      ],
+                    );
+                  }),
+            ),
+            SizedBox(
+              height: 10,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -166,7 +283,7 @@ class _WishlistWidgetState extends State<WishlistWidget> {
   void initState() {
     super.initState();
     _loading = true;
-    Services.getMovies().then((movies) {
+    Services.getMovies(Services.url).then((movies) {
       setState(() {
         _movies = movies;
         _loading = false;
@@ -192,7 +309,6 @@ class _WishlistWidgetState extends State<WishlistWidget> {
           ),
           Expanded(
             child: Container(
-              height: 400,
               child: ListView.builder(
                   scrollDirection: Axis.vertical,
                   itemCount: null == _movies ? 0 : 5,
