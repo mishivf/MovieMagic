@@ -1,7 +1,11 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'Services.dart';
 import 'Movie.dart';
 import 'MoviePage.dart';
+import 'Genre.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:filter_list/filter_list.dart';
 
 class SearchWidget extends StatefulWidget {
   const SearchWidget({
@@ -15,12 +19,59 @@ class SearchWidget extends StatefulWidget {
 class _SearchWidgetState extends State<SearchWidget> {
   List<Movie> _movies;
   bool _loading;
+  String genre;
+  List<Genre> _genres, _selectedGenres = [];
+  List<String> temp = ['one', 'two'], genresName;
 
   @override
   void initState() {
     super.initState();
     _loading = true;
     getMovieList(Services.url);
+    Services.getGenres(Uri.parse(
+            'https://api.themoviedb.org/3/movie/popular?api_key=ecd787072d3797fe3b24ff3cb23165c5&language=en-US&page=1'))
+        .then((genres) {
+      setState(() {
+        _genres = genres;
+        _loading = false;
+      });
+    });
+  }
+
+  void _openFilterList() async {
+    var list = await FilterListDialog.display<String>(context,
+        listData: temp,
+        height: 450,
+        borderRadius: 20,
+        headlineText: "Select Genre",
+        searchFieldHintText: "Search ", choiceChipLabel: (item) {
+      return item;
+    }, validateSelectedItem: (list, val) {
+      return list.contains(val);
+    }, onItemSearch: (list, text) {
+      if (list.any(
+          (element) => element.toLowerCase().contains(text.toLowerCase()))) {
+        return list
+            .where(
+                (element) => element.toLowerCase().contains(text.toLowerCase()))
+            .toList();
+      } else {
+        return [];
+      }
+    }, onApplyButtonClick: (list) {
+      if (list != null) {
+        setState(() {
+          _selectedGenres = List.from(list);
+        });
+      }
+      Navigator.pop(context);
+    });
+
+    if (list != null) {
+      setState(() {
+        _selectedGenres = List.from(list);
+      });
+    }
   }
 
   void getMovieList(Uri url) {
@@ -47,6 +98,8 @@ class _SearchWidgetState extends State<SearchWidget> {
         padding: EdgeInsets.fromLTRB(10, 50, 10, 0),
         child: Column(
           children: [
+            // for (var i = 0; i < _genres.length; i++)
+            //   {genresName[i] = _genres[i].name},
             TextField(
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
@@ -57,7 +110,75 @@ class _SearchWidgetState extends State<SearchWidget> {
                       text))),
             ),
             SizedBox(
-              height: 10,
+              height: 5,
+            ),
+            Row(children: [
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(50),
+                ),
+                height: 33,
+                child: OutlinedButton(
+                  onPressed: _openFilterList,
+                  style: ButtonStyle(
+                    shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(100.0))),
+                  ),
+                  child: Text(
+                    'language',
+                    style: TextStyle(color: Colors.black),
+                  ),
+                ),
+              ),
+              SizedBox(
+                width: 3,
+              ),
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(50),
+                ),
+                height: 33,
+                child: OutlinedButton(
+                  onPressed: () {},
+                  style: ButtonStyle(
+                    shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(100.0))),
+                  ),
+                  child: Text(
+                    'genre',
+                    style: TextStyle(color: Colors.black),
+                  ),
+                ),
+              ),
+              SizedBox(
+                width: 3,
+              ),
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(50),
+                ),
+                height: 33,
+                child: OutlinedButton(
+                  onPressed: _openFilterList,
+                  style: ButtonStyle(
+                    shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(100.0))),
+                  ),
+                  child: Text(
+                    'sort by',
+                    style: TextStyle(color: Colors.black),
+                  ),
+                ),
+              ),
+              SizedBox(
+                width: 3,
+              ),
+            ]),
+            SizedBox(
+              height: 5,
             ),
             Expanded(
               child: Container(
@@ -101,6 +222,8 @@ class _SearchWidgetState extends State<SearchWidget> {
                                       child: Text(
                                         _movies[index].title,
                                         textScaleFactor: 1.2,
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold),
                                       ),
                                     ),
                                     Container(
