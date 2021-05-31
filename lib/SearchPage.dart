@@ -4,7 +4,7 @@ import 'Services.dart';
 import 'Movie.dart';
 import 'MoviePage.dart';
 import 'Genre.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
 import 'package:filter_list/filter_list.dart';
 
 class SearchWidget extends StatefulWidget {
@@ -19,9 +19,10 @@ class SearchWidget extends StatefulWidget {
 class _SearchWidgetState extends State<SearchWidget> {
   List<Movie> _movies;
   bool _loading;
-  String genre;
-  List<Genre> _genres, _selectedGenres = [];
-  List<String> temp = ['one', 'two'], genresName;
+  String genre = '';
+  List<Genre> _genres = [];
+  List<String> _selectedGenres = [];
+  List<String> languageName = [], genresName = [];
 
   @override
   void initState() {
@@ -29,18 +30,77 @@ class _SearchWidgetState extends State<SearchWidget> {
     _loading = true;
     getMovieList(Services.url);
     Services.getGenres(Uri.parse(
-            'https://api.themoviedb.org/3/movie/popular?api_key=ecd787072d3797fe3b24ff3cb23165c5&language=en-US&page=1'))
+            'https://api.themoviedb.org/3/genre/movie/list?api_key=ecd787072d3797fe3b24ff3cb23165c5&language=en-US'))
         .then((genres) {
       setState(() {
         _genres = genres;
         _loading = false;
       });
+      // print(_genres.length);
+      for (var item in _genres) {
+        genresName.add(item.name);
+      }
+      print(genresName.length);
     });
   }
 
-  void _openFilterList() async {
+  void _openGenreList() async {
+    var list = await FilterListDialog.display<String>(
+      context,
+      listData: genresName,
+      height: 450,
+      borderRadius: 20,
+      headlineText: "Select Genre",
+      searchFieldHintText: "Search ",
+      choiceChipLabel: (item) {
+        return item;
+      },
+      validateSelectedItem: (list, val) {
+        return list.contains(val);
+      },
+      onItemSearch: (list, text) {
+        if (list.any(
+            (element) => element.toLowerCase().contains(text.toLowerCase()))) {
+          return list
+              .where((element) =>
+                  element.toLowerCase().contains(text.toLowerCase()))
+              .toList();
+        } else {
+          return [];
+        }
+      },
+      onApplyButtonClick: (list) {
+        if (list != null) {
+          setState(() {
+            _selectedGenres = List.from(list);
+            // FIXME: Optimize id search using hashmaps
+            for (var s_item in _selectedGenres) {
+              for (var g_item in _genres) {
+                if (s_item == g_item.name) {
+                  genre += g_item.id.toString() + ',';
+                  break;
+                }
+              }
+            }
+            getMovieList(Uri.parse(
+                'https://api.themoviedb.org/3/discover/movie?api_key=ecd787072d3797fe3b24ff3cb23165c5&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=1&with_watch_monetization_types=flatrate&with_genres=' +
+                    genre));
+          });
+        }
+        Navigator.pop(context);
+      },
+    );
+
+    if (list != null) {
+      setState(() {
+        _selectedGenres = List.from(list);
+      });
+    }
+  }
+
+  void _openLanguageList() async {
     var list = await FilterListDialog.display<String>(context,
-        listData: temp,
+        listData: genresName,
         height: 450,
         borderRadius: 20,
         headlineText: "Select Genre",
@@ -120,7 +180,7 @@ class _SearchWidgetState extends State<SearchWidget> {
                 ),
                 height: 33,
                 child: OutlinedButton(
-                  onPressed: _openFilterList,
+                  onPressed: _openGenreList,
                   style: ButtonStyle(
                     shape: MaterialStateProperty.all(RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(100.0))),
@@ -141,7 +201,7 @@ class _SearchWidgetState extends State<SearchWidget> {
                 ),
                 height: 33,
                 child: OutlinedButton(
-                  onPressed: () {},
+                  onPressed: _openGenreList,
                   style: ButtonStyle(
                     shape: MaterialStateProperty.all(RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(100.0))),
@@ -162,7 +222,7 @@ class _SearchWidgetState extends State<SearchWidget> {
                 ),
                 height: 33,
                 child: OutlinedButton(
-                  onPressed: _openFilterList,
+                  onPressed: _openGenreList,
                   style: ButtonStyle(
                     shape: MaterialStateProperty.all(RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(100.0))),
